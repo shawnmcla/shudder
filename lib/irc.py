@@ -1,7 +1,7 @@
 import socket
 import threading
 import time
-from collections import deque
+import queue
 from lib.cfg import config
 
 
@@ -12,8 +12,8 @@ class Irc():
     
     def __init__(self, msghandler):
         self.sock = socket.socket()
-        self._outMessageQueue = deque([])
-        self._inMessageQueue = deque([])
+        self._outMessageQueue = queue.Queue()
+        self._inMessageQueue = queue.Queue()
         self._msg_handler = msghandler
 
     def _send_message(self, msg):
@@ -37,28 +37,28 @@ class Irc():
 
     def _get_out_queue_count(self):
         """Get the number of elements in the outbound queue."""
-        return len(self._outMessageQueue)
+        return self._outMessageQueue.qsize()
 
     def _get_in_queue_count(self):
         """Get the number of elements in the inbound queue."""
-        return len(self._inMessageQueue)
+        return self._inMessageQueue.qsize()
 
     def queue_out_messages(self, *messages):
         """Queue one or more messages to be sent."""
         for msg in messages:
             if type(msg) is str:
-                self._outMessageQueue.append(msg)
+                self._outMessageQueue.put(msg)
 
     def queue_in_messages(self, *messages):
         """Queue one or more messages to be processed."""
         for msg in messages:
             if type(msg) is str:
-                self._inMessageQueue.append(msg)
+                self._inMessageQueue.put(msg)
 
     def _send_next(self):
         """Send the next message from the outbound queue to the server."""
-        if len(self._outMessageQueue)>0:
-            self._send_message(self._outMessageQueue.popleft())
+        if self._get_out_queue_count()>0:
+            self._send_message(self._outMessageQueue.get())
 
     def _receive_message(self):
         """Receive the next IRC message through the socket."""
@@ -89,7 +89,7 @@ class Irc():
         print("Starting handler thread")
         while True:
             if self._get_in_queue_count()>0:
-                self._msg_handler(self._inMessageQueue.popleft())
+                self._msg_handler(self._inMessageQueue.get())
             time.sleep(1/100)
 
     def start_bot(self):
