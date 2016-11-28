@@ -4,6 +4,6 @@ from lib.cfg import config
 
 def bot_info(userName, *args, **kwargs):
     """Whisper information about the bot to the user"""
-    return ["/w {} {} is powered by the open-source project: PLACEHOLDERNAME!\
+    return ["/w {} {} is powered by the open-source project: Shudder!\
     To learn more about it or even contribute, visit the GitHub repository:\
      {}".format(userName, config['botName'], config['sourceRepository'])]

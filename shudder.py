@@ -1,8 +1,4 @@
-import re
-import threading
 import sys
-import lib.irc as irc
-from lib.cmd import process_message
 from lib.cfg import read_config_from_file
 
 print("Reading configuration file..")
@@ -10,6 +6,12 @@ if not read_config_from_file():
     print("Error parsing configuration file.")
     sys.exit(0)
 print("Config loaded!")
+
+import re
+import threading
+import lib.irc as irc
+from lib.cmd import process_message
+
 def _consoleLoop():
     print("Starting console thread")
     while True:

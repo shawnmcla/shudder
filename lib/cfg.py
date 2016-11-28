@@ -7,7 +7,7 @@ config = {
     'password' : None,
     'apiKey' :  None,
     'channelName' : None,
-    'apiUrl' : None,
+    'apiUrl' : 'https://api.twitch.tv/kraken/',
     'messageRate' : 20/30,
     'botName' : None,
     'dynamicCommandsFile' : 'dynamiccommands',

@@ -8,7 +8,6 @@ Contains various methods making calls to the Twitch API
 """
 
 #HTTP Header to send with API requests.
-_headers = {'Client-ID' : config['apiKey']}
 
 _mods = {}
 _followers = []
@@ -66,6 +65,7 @@ def is_follower(userName):
     if cacheStatus != False:
         return cacheStatus
     else:
+        _headers = {'Client-ID' : config['apiKey']}
         url = config['apiUrl']+"users/{}/follows/channels/{}".format(userName, config['channelName'])
         r = requests.get(url, headers=_headers)
         json = r.json()
