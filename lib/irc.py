@@ -73,7 +73,7 @@ class Irc():
         print("Starting receiving thread")
         while True:
             response = self._receive_message()
-            print(response)
+            print(response.encode("utf-8"))
             if response:
                 self.queue_in_messages(response)
             
