@@ -4,7 +4,6 @@ import time
 import queue
 from lib.cfg import config
 
-
 class Irc():
     """Class which initializes and maintains an IRC connection to Twitch chat.
     Handles inbound and outbound message queues.
@@ -73,8 +72,8 @@ class Irc():
         print("Starting receiving thread")
         while True:
             response = self._receive_message()
-            print(response.encode("utf-8"))
-            if response:
+            if response and type(response) is str:
+                print(response.encode("utf-8"))
                 self.queue_in_messages(response)
             
     def _sendingLoop(self):
