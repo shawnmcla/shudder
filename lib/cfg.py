@@ -11,7 +11,7 @@ config = {
     'messageRate' : 20/30,
     'botName' : None,
     'dynamicCommandsFile' : 'dynamiccommands',
-    'messageOnConnect' : True,
+    'messageOnConnect' : False,
     'connectMessage' : 'HeyGuys Bot Online HeyGuys',
     'modCacheTimeout' : 30,
     'sourceRepository' : 'https://github.com/shawnmcla/shudder'

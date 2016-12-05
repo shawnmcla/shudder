@@ -11,7 +11,9 @@ import re
 import threading
 import lib.irc as irc
 from lib.cmd import process_message
+from lib.database import initialize_database
 
+initialize_database()
 def _consoleLoop():
     print("Starting console thread")
     while True:
