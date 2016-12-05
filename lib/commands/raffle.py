@@ -51,7 +51,7 @@ class Raffle():
         if self._active:
             if len(self._entered) == 0:
                 return self.cancel_raffle(userName, args)
-            self._winner = self._entered[random.randint(0, len(self._entered)-1)]
+            self._winner = random.choice(self._entered)
             self._lastWinner = self._winner
             self._active = False
             return ["{} has won {}! Contact a moderator to receive your prize! :)".format(self._winner, self._prize)]
