@@ -7,7 +7,7 @@ _DBNAME = 'data/db.sqlite'
 _QUERIES = {
     'createTables':[
     "CREATE TABLE IF NOT EXISTS dynamiccommands(id INTEGER PRIMARY KEY, name TEXT, output TEXT)",
-    "CREATE TABLE IF NOT EXISTS users(id INTEGER PRIMARY KEY, name TEXT, currency INTEGER)"
+    "CREATE TABLE IF NOT EXISTS users(name TEXT PRIMARY KEY, currency INTEGER)"
     ],
     'getDynamicCommands':'''
     SELECT name, output FROM dynamiccommands
@@ -22,11 +22,14 @@ _QUERIES = {
     UPDATE dynamiccommands SET output = ? WHERE name = ?
     ''',
     'getUsers':'''
-    SELECT name, currency FROM users
+    SELECT * FROM users
     ''',
     'getUserCurrency':'''
     SELECT currency FROM users WHERE name = ?
     ''',
+    'updateUserCurrency':'''
+    INSERT OR REPLACE INTO users (name, currency) VALUES (?,?)
+    '''
 }
 
 def initialize_database():
@@ -48,6 +51,14 @@ def get_users_currency_table():
         cursor = db.cursor()
         cursor.execute(_QUERIES['getUsers'])
         return cursor.fetchall()
+    return False
+
+def update_users_currency_table(users):
+    with sqlite3.connect(_DBNAME) as db:
+        cursor = db.cursor()
+        for key, value in users.items():
+            cursor.execute(_QUERIES['updateUserCurrency'], (key, value))
+        return True
     return False
 
 def get_user_currency(name):

@@ -4,6 +4,7 @@ from lib.cfg import config
 from lib.commands.flipcoin import flip_coin
 from lib.commands.raffle import Raffle
 from lib.commands.bot import bot_info
+from lib.currency import get_balance
 
 raffle = Raffle()
 fileName = config['dynamicCommandsFile']
@@ -163,6 +164,12 @@ commands = { #Internal pre-loaded commands
         'desc' : 'Modify an existing dynamic command\'s output.',
         'usage' : '!updatecommand <command name> <new command output>',
         'caller' : update_dynamic_command
+    },
+    '!balance':{
+        'argc': 0,
+        'level': 0,
+        'desc': 'Fetch a user\'s currency balance.',
+        'caller': get_balance
     }
 }
 

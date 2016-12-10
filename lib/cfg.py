@@ -18,6 +18,15 @@ config = {
     'DEBUG' : False
 }
 
+currencyConfig = {
+    'useCurrency': True,
+    'currencyName': 'Leks',
+    'giveTokensPerViewTime': True,
+    'tokensPerMinute': 1,
+    'giveTokensPerMessage': True,
+    'tokensPerMessage': 1
+}
+
 def read_config_from_file():
     """Read configuration values from config file"""
     with open(_CFG_FILE_NAME, "r") as f:
