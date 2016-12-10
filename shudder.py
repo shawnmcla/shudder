@@ -1,11 +1,15 @@
 import sys
-from lib.cfg import read_config_from_file
+from lib.cfg import read_config_from_file, config
 
 print("Reading configuration file..")
 if not read_config_from_file():
     print("Error parsing configuration file.")
     sys.exit(0)
 print("Config loaded!")
+
+if len(sys.argv)>1 and sys.argv[1].lower() == "-d":
+    print("DEBUG MODE")
+    config['DEBUG'] = True
 
 import re
 import threading
@@ -40,5 +44,5 @@ def handle_message(message):
 
 _irc = irc.Irc(handle_message)
 _irc.start_bot()
-consoleThread = threading.Thread(target=_consoleLoop)
-consoleThread.start()
+#consoleThread = threading.Thread(target=_consoleLoop)
+#consoleThread.start()

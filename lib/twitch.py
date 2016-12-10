@@ -90,3 +90,22 @@ def is_mod(userName):
         isMod = userName in json["chatters"]["moderators"]
         _mods[userName] = isMod
         return isMod
+
+def get_viewers():
+    """Get a flattened set of chatters from all categories.
+
+    Calls on the twitch api to retrieve a list of users.
+    Includes moderators, staff, admins, global_mods and viewers.
+    """
+    users = set()
+    url = "https://tmi.twitch.tv/group/user/{}/chatters".format(config['channelName'])
+    r = requests.get(url)
+    json = r.json()
+    chatters = json["chatters"]
+    categories = ["moderators", "staff", "admins", "global_mods", "viewers"]
+    for cat in categories:
+        for name in chatters[cat]:
+            users.add(name)
+    return users
+
+

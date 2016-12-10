@@ -163,7 +163,7 @@ commands = { #Internal pre-loaded commands
         'desc' : 'Modify an existing dynamic command\'s output.',
         'usage' : '!updatecommand <command name> <new command output>',
         'caller' : update_dynamic_command
-    }    
+    }
 }
 
 _load_dynamic_commands()

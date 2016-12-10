@@ -90,3 +90,7 @@ ENV/
 
 #db
 db.sqlite
+
+#misc
+mocksock.py
+bot.bat

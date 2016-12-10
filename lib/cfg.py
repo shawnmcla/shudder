@@ -11,10 +11,11 @@ config = {
     'messageRate' : 20/30,
     'botName' : None,
     'dynamicCommandsFile' : 'dynamiccommands',
-    'messageOnConnect' : False,
-    'connectMessage' : 'HeyGuys Bot Online HeyGuys',
+    'messageOnConnect' : True,
+    'connectMessage' : 'MrDestructoid Bot Online MrDestructoid',
     'modCacheTimeout' : 30,
-    'sourceRepository' : 'https://github.com/shawnmcla/shudder'
+    'sourceRepository' : 'https://github.com/shawnmcla/shudder',
+    'DEBUG' : False
 }
 
 def read_config_from_file():
@@ -26,12 +27,12 @@ def read_config_from_file():
             if line and line[0] != "#":
                 split = line.split("=")
                 if len(split) != 2:
-                    print("Split not len 2: {}".format(line))
+                    print("Error in config line: {}".format(line))
                     return False
                 name = split[0].strip()
                 value = split[1].strip()
                 if name not in config:
-                    print("invalid name {}".format(name))
+                    print("Error in config line: {}\nInvalid config key '{}'".format(line, name))
                     return False
                 config[name] = value
     return True

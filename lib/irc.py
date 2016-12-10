@@ -1,8 +1,14 @@
-import socket
+from lib.cfg import config
 import threading
 import time
 import queue
-from lib.cfg import config
+
+if config['DEBUG']:
+    import lib.mocksock as socket
+else:
+    import socket
+
+
 
 class Irc():
     """Class which initializes and maintains an IRC connection to Twitch chat.
@@ -73,7 +79,7 @@ class Irc():
         while True:
             response = self._receive_message()
             if response and type(response) is str:
-                print(response.encode("utf-8"))
+                #print(response.encode("utf-8"))
                 self.queue_in_messages(response)
             
     def _sendingLoop(self):

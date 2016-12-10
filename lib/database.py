@@ -5,9 +5,10 @@ import sqlite3
 
 _DBNAME = 'data/db.sqlite'
 _QUERIES = {
-    'createTables':'''
-    CREATE TABLE IF NOT EXISTS dynamiccommands(id INTEGER PRIMARY KEY, name TEXT, output TEXT)
-    ''',
+    'createTables':[
+    "CREATE TABLE IF NOT EXISTS dynamiccommands(id INTEGER PRIMARY KEY, name TEXT, output TEXT)",
+    "CREATE TABLE IF NOT EXISTS users(id INTEGER PRIMARY KEY, name TEXT, currency INTEGER)"
+    ],
     'getDynamicCommands':'''
     SELECT name, output FROM dynamiccommands
     ''',
@@ -19,12 +20,19 @@ _QUERIES = {
     ''',
     'updateDynamicCommand':'''
     UPDATE dynamiccommands SET output = ? WHERE name = ?
-    '''
+    ''',
+    'getUsers':'''
+    SELECT name, currency FROM users
+    ''',
+    'getUserCurrency':'''
+    SELECT currency FROM users WHERE name = ?
+    ''',
 }
 
 def initialize_database():
     with sqlite3.connect(_DBNAME) as db:
-        db.execute(_QUERIES['createTables'])
+        for query in _QUERIES['createTables']:
+            db.execute(query)
         db.commit()
     print("Done initializing Database!")
 
@@ -33,6 +41,19 @@ def get_dynamic_commands():
         cursor = db.cursor()
         cursor.execute(_QUERIES['getDynamicCommands'])
         return cursor.fetchall()
+    return False
+
+def get_users_currency_table():
+    with sqlite3.connect(_DBNAME) as db:
+        cursor = db.cursor()
+        cursor.execute(_QUERIES['getUsers'])
+        return cursor.fetchall()
+    return False
+
+def get_user_currency(name):
+    with sqlite3.connect(_DBNAME) as db:
+        cursor = db.cursor()
+        cursor.execute(_QUERIES['getUserCurrency'], (name,))
 
 def delete_dynamic_command(name):
     with sqlite3.connect(_DBNAME) as db:

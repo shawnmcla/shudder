@@ -1,5 +1,4 @@
 import random
-
 #Command: !flipcoin
 
 def flip_coin(userName, *args, **kwargs):
