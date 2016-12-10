@@ -24,7 +24,9 @@ currencyConfig = {
     'giveTokensPerViewTime': True,
     'tokensPerMinute': 1,
     'giveTokensPerMessage': True,
-    'tokensPerMessage': 1
+    'tokensPerMessage': 1,
+    'giveFollowBonus': True,
+    'followBonus': 100
 }
 
 def read_config_from_file():

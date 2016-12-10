@@ -1,10 +1,9 @@
-import os.path
 import lib.database as db
 from lib.cfg import config
 from lib.commands.flipcoin import flip_coin
 from lib.commands.raffle import Raffle
 from lib.commands.bot import bot_info
-from lib.currency import get_balance
+from lib.currency import get_balance, pay
 
 raffle = Raffle()
 fileName = config['dynamicCommandsFile']
@@ -170,6 +169,13 @@ commands = { #Internal pre-loaded commands
         'level': 0,
         'desc': 'Fetch a user\'s currency balance.',
         'caller': get_balance
+    },
+    '!pay':{
+        'argc': 2,
+        'level': 0,
+        'desc': 'Give currency units to another user.',
+        'usage': '!pay <recipient> <amount>',
+        'caller': pay
     }
 }
 

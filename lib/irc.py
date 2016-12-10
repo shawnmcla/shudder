@@ -79,7 +79,6 @@ class Irc():
         while True:
             response = self._receive_message()
             if response and type(response) is str:
-                #print(response.encode("utf-8"))
                 self.queue_in_messages(response)
             
     def _sendingLoop(self):

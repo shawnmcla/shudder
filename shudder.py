@@ -1,6 +1,6 @@
 import sys
 from lib.cfg import read_config_from_file, config
-from lib.currency import load_from_db, test, write_to_db
+from lib.currency import initialize_currency_system
 from lib.timedevents import start_timed_event_manager, register_event
 
 print("Reading configuration file..")
@@ -14,14 +14,13 @@ if len(sys.argv)>1 and sys.argv[1].lower() == "-d":
     config['DEBUG'] = True
 
 import re
-import threading
 import lib.irc as irc
 from lib.cmd import process_message
 from lib.database import initialize_database
 
 initialize_database()
-load_from_db()
 start_timed_event_manager()
+initialize_currency_system()
 
 def _consoleLoop():
     print("Starting console thread")
