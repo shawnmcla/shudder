@@ -1,9 +1,11 @@
+"""Defines methods used for the bot's currency system."""
+
 import lib.database as db
 from lib.cfg import currencyConfig
 from lib.twitch import get_viewers
 from lib.timedevents import register_event
 
-_users = {}
+_users = dict()
 _USECURRENCY = currencyConfig['useCurrency']
 _CURRENCYNAME = currencyConfig['currencyName']
 _GIVEPERVIEWTIME = currencyConfig['giveTokensPerViewTime']
@@ -58,13 +60,14 @@ def _transfer_tokens(userFrom, userTo, amount):
     if userFrom == userTo:
         return (False, "Can't pay yourself!")
     if _get_balance(userFrom) < amount:
-        return (False,"You do not have enough {}.".format(_CURRENCYNAME))
+        return (False, "You do not have enough {}.".format(_CURRENCYNAME))
     if userTo not in get_viewers():
-        return "{} is not a valid recipient.".format(userTo)
+        return (False, "{} is not a valid recipient.".format(userTo))
     else:
         _remove_tokens(userFrom, amount)
         _add_tokens(userTo, amount)
-        return (True, "User {} transferred {} {} to {}.".format(userFrom, amount, _CURRENCYNAME, userTo))
+        return (True, "User {} transferred {} {} to {}.".format(userFrom,
+                                                                amount, _CURRENCYNAME, userTo))
 
 def _give_tokens_per_minute():
     amount = _TOKENSPERMINUTE
@@ -92,6 +95,7 @@ def pay(userName, *args, **kwargs):
 
 # CALL BEFORE USING MODULE
 def initialize_currency_system():
+    """Load records from database and register timedevents."""
     if _USECURRENCY:
         _load_from_db()
         register_event(_write_to_db, 600)

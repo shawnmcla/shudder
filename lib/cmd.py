@@ -1,10 +1,10 @@
+"""Module which processes messages and parses commands."""
+
 from lib.cfg import config
 from lib.twitch import is_mod
 from lib.botcommands import commands
 
-"""Module which processes messages and parses commands."""
-
-def _hasCorrectArgs(command, argc):
+def _has_correct_args(command, argc):
     """Verify if the number of arguments is valid.
 
     command is an entry of the commands dictionary.
@@ -13,11 +13,8 @@ def _hasCorrectArgs(command, argc):
         return True
     return False
 
-def _hasCorrectPrivilege(command, userName):
-    """Verify if the user has the appropriate privilege to call the command.
-    
-    command is an entry of the commands dictionary.
-    """
+def _has_correct_privilege(command, userName):
+    """Verify if the user has the appropriate privilege to call the command."""
     level = command['level']
     if level == 0:
         return True
@@ -33,9 +30,9 @@ def process_message(userName, message):
         args = message.split()[1:]
         argc = len(args)
         cmd = commands[commandName]
-        if _hasCorrectPrivilege(cmd, userName):
-            if _hasCorrectArgs(cmd, argc):
-                return cmd['caller'](userName, *args, commandName = commandName)
+        if _has_correct_privilege(cmd, userName):
+            if _has_correct_args(cmd, argc):
+                return cmd['caller'](userName, *args, commandName=commandName)
             else:
                 return ["Invalid arguments. Usage: {}".format(cmd['usage'])]
         return None

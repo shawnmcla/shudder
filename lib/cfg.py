@@ -1,5 +1,7 @@
+"""Holds various configuration variables."""
+
 _CFG_FILE_NAME = "shudder.cfg"
-"""Dictionary representing various configuration variables."""
+
 config = {
     'host' : 'irc.chat.twitch.tv',
     'port' : 6667,
@@ -10,7 +12,6 @@ config = {
     'apiUrl' : 'https://api.twitch.tv/kraken/',
     'messageRate' : 20/30,
     'botName' : None,
-    'dynamicCommandsFile' : 'dynamiccommands',
     'messageOnConnect' : True,
     'connectMessage' : 'MrDestructoid Bot Online MrDestructoid',
     'modCacheTimeout' : 30,
@@ -31,8 +32,8 @@ currencyConfig = {
 
 def read_config_from_file():
     """Read configuration values from config file"""
-    with open(_CFG_FILE_NAME, "r") as f:
-        lines = f.readlines(5000)
+    with open(_CFG_FILE_NAME, "r") as cfile:
+        lines = cfile.readlines(5000)
         for line in lines:
             line = line.strip()
             if line and line[0] != "#":

@@ -1,3 +1,5 @@
+"""Contains code to communicate with the IRC chat server."""
+
 from lib.cfg import config
 import threading
 import time
@@ -23,7 +25,7 @@ class Irc():
 
     def _send_message(self, msg):
         """Send the specified string as an IRC message to the bot's channel"""
-        if type(msg) is str:
+        if isinstance(msg, str):
             message = "PRIVMSG #{} : {}\r\n".format(config['channelName'], msg).encode("utf-8")
             self.sock.send(message)
 
@@ -51,13 +53,13 @@ class Irc():
     def queue_out_messages(self, *messages):
         """Queue one or more messages to be sent."""
         for msg in messages:
-            if type(msg) is str:
+            if isinstance(msg, str):
                 self._outMessageQueue.put(msg)
 
     def queue_in_messages(self, *messages):
         """Queue one or more messages to be processed."""
         for msg in messages:
-            if type(msg) is str:
+            if isinstance(msg, str):
                 self._inMessageQueue.put(msg)
 
     def _send_next(self):
@@ -78,7 +80,7 @@ class Irc():
         print("Starting receiving thread")
         while True:
             response = self._receive_message()
-            if response and type(response) is str:
+            if response and isinstance(response, str):
                 self.queue_in_messages(response)
             
     def _sendingLoop(self):

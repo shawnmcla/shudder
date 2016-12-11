@@ -1,3 +1,5 @@
+"""Module which stores defines bot chat commands."""
+
 import lib.database as db
 from lib.cfg import config
 from lib.commands.flipcoin import flip_coin
@@ -6,7 +8,6 @@ from lib.commands.bot import bot_info
 from lib.currency import get_balance, pay
 
 raffle = Raffle()
-fileName = config['dynamicCommandsFile']
 
 """List of commands.
 
