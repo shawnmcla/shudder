@@ -108,4 +108,6 @@ def get_viewers():
             users.add(name)
     return users
 
-
+def user_online(name):
+    """Check whether or not a user is online."""
+    return name in get_viewers()

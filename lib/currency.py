@@ -2,7 +2,7 @@
 
 import lib.database as db
 from lib.cfg import currencyConfig
-from lib.twitch import get_viewers
+from lib.twitch import get_viewers, user_online
 from lib.timedevents import register_event
 
 _users = dict()
@@ -72,7 +72,10 @@ def _transfer_tokens(userFrom, userTo, amount):
 def _give_tokens_per_minute():
     amount = _TOKENSPERMINUTE
     for username in get_viewers():
-        _users[username] += amount
+        if username not in _users:
+            _users[username] = amount
+        else:
+            _users[username] += amount
 
 # Chat Commands
 def get_balance(userName, *args, **kwargs):
@@ -92,6 +95,21 @@ def pay(userName, *args, **kwargs):
     if result[0]:
         return [result[1]]
     return ["/w {} {}".format(userName, result[1])]
+
+def give_tokens(userName, *args, **kwargs):
+    """Add tokens to the specified user."""
+    userTo = args[0]
+    if not user_online(userName):
+        return False
+    try:
+        amount = int(args[1])
+    except ValueError:
+        return False
+    _add_tokens(userTo, amount)
+    return ["{} was granted {} {} by {}!".format(
+        userTo, amount, _CURRENCYNAME, userName
+    )]
+
 
 # CALL BEFORE USING MODULE
 def initialize_currency_system():

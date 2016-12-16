@@ -5,7 +5,7 @@ from lib.cfg import config
 from lib.commands.flipcoin import flip_coin
 from lib.commands.raffle import Raffle
 from lib.commands.bot import bot_info
-from lib.currency import get_balance, pay
+from lib.currency import get_balance, pay, give_tokens
 
 raffle = Raffle()
 
@@ -174,9 +174,16 @@ commands = { #Internal pre-loaded commands
     '!pay':{
         'argc': 2,
         'level': 0,
-        'desc': 'Give currency units to another user.',
+        'desc': 'Transfer currency units to another user.',
         'usage': '!pay <recipient> <amount>',
         'caller': pay
+    },
+    '!give':{
+        'argc': 2,
+        'level': 1,
+        'desc': 'Give currency units to another user.',
+        'usage': '!give <recipient> <amount>',
+        'caller': give_tokens
     }
 }
 
