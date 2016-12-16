@@ -25,13 +25,22 @@ Dynamic commands are commands created dynamically by users and do not call any c
 
 commands = {}
 
+def command_subcommands(userName, *args, **kwargs):
+    """Handle calling subcommands for the "!command" command. """
+    subs = commands['!command']['subcommands']
+    if args:
+        sub = args[0]
+    else:
+        return False
+    if sub in subs.keys():
+        return subs[sub]['caller'](userName, *(args[1:]), **kwargs)
+
 def dynamic_caller(userName, *args, **kwargs):
     """Handle a dynamic command.
     
     Called whenever a dynamic command is used
     """
     if kwargs["commandName"]:
-        print(commands[kwargs["commandName"]]['output'])
         return [commands[kwargs["commandName"]]['output']]
     return None
 
@@ -59,7 +68,7 @@ def add_dynamic_command(userName, *args, **kwargs):
     if commandName in commands:
         return ["Cannot overwrite command {}".format(commandName)]
     if len(args[1:]) == 0:
-        return ["Please specify the command output. Use !addcommand to see usage information."]
+        return ["Please specify the command output. Use !command add to see usage information."]
     output = ' '.join(args[1:])
     if db.save_dynamic_command(commandName, output):
         _add_dynamic_command(commandName, output)
@@ -144,26 +153,36 @@ commands = { #Internal pre-loaded commands
         'desc' : 'Cancel the raffle, if one is active.',
         'caller' : raffle.cancel_raffle
     },
-    '!addcommand' :{
+    '!command' :{
         'argc' : -1,
         'level' : 1,
-        'desc' : 'Add a new dynamic command.',
-        'usage' : '!addcommand <command name> <command output>',
-        'caller' : add_dynamic_command
-    },
-    '!deletecommand' :{
-        'argc' : 1,
-        'level' : 1,
-        'desc' : 'Delete an existing dynamic command.',
-        'usage' : '!deletecommand <command name>',
-        'caller' : delete_dynamic_command
-    },
-    '!updatecommand' :{
-        'argc' : -1,
-        'level' : 1,
-        'desc' : 'Modify an existing dynamic command\'s output.',
-        'usage' : '!updatecommand <command name> <new command output>',
-        'caller' : update_dynamic_command
+        'desc' : 'Super-command to various command related subcommands. A mouthful.',
+        'usage' : '!command <subcommand> [arguments]',
+        'caller' : command_subcommands,
+        'subcommands': {
+            'add' :{
+            'argc' : -1,
+            'level' : 1,
+            'desc' : 'Add a new dynamic command.',
+            'usage' : '!command add <command name> <command output>',
+            'caller' : add_dynamic_command
+            },
+            'delete': {
+            'argc' : 1,
+            'level' : 1,
+            'desc' : 'Delete an existing dynamic command.',
+            'usage' : '!command delete <command name>',
+            'caller' : delete_dynamic_command
+            },
+            'update':{
+            'argc' : -1,
+            'level' : 1,
+            'desc' : 'Modify an existing dynamic command\'s output.',
+            'usage' : '!command update <command name> <new command output>',
+            'caller' : update_dynamic_command
+            }
+
+        }
     },
     '!balance':{
         'argc': 0,

@@ -12,7 +12,7 @@ config = {
     'apiUrl' : 'https://api.twitch.tv/kraken/',
     'messageRate' : 20/30,
     'botName' : None,
-    'messageOnConnect' : True,
+    'messageOnConnect' : False,
     'connectMessage' : 'MrDestructoid Bot Online MrDestructoid',
     'modCacheTimeout' : 30,
     'sourceRepository' : 'https://github.com/shawnmcla/shudder',
