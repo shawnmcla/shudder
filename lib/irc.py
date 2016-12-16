@@ -17,11 +17,11 @@ class Irc():
     Handles inbound and outbound message queues.
     """
     
-    def __init__(self, msghandler):
+    def __init__(self):
         self.sock = socket.socket()
         self._outMessageQueue = queue.Queue()
         self._inMessageQueue = queue.Queue()
-        self._msg_handler = msghandler
+        self._msg_handler = None
 
     def _send_message(self, msg):
         """Send the specified string as an IRC message to the bot's channel"""
@@ -77,34 +77,34 @@ class Irc():
     
     def _receiveLoop(self):
         """Loop infinitely to receive messages and queue them for processing."""
-        print("Starting receiving thread")
         while True:
             response = self._receive_message()
             if response and isinstance(response, str):
                 self.queue_in_messages(response)
             
-    def _sendingLoop(self):
+    def _sendLoop(self):
         """Loop infinitely to send messages from the outbound queue at the specified interval."""
-        print("Starting sending thread")
         while True:
             self._send_next()
             time.sleep(1/config['messageRate'])        
     
     def _handlerLoop(self):
         """Loop infinitely to handle messages from the inbound queue."""
-        print("Starting handler thread")
         while True:
             if self._get_in_queue_count()>0:
                 self._msg_handler(self._inMessageQueue.get())
             time.sleep(1/100)
 
-    def start_bot(self):
+    def start_bot(self, messageHandler):
         """Establish an IRC connection and start the various threads."""
+        self._msg_handler = messageHandler
         self._connect_to_server()
         print("Connected!")
         rcvThread = threading.Thread(target = self._receiveLoop)
-        sendThread = threading.Thread(target = self._sendingLoop)
+        sendThread = threading.Thread(target = self._sendLoop)
         handlerThread = threading.Thread(target = self._handlerLoop)
         rcvThread.start()
         sendThread.start()
         handlerThread.start()
+
+irc = Irc()

@@ -1,23 +1,23 @@
 import sys
+import threading
 from lib.cfg import read_config_from_file, config
 from lib.currency import initialize_currency_system
-from lib.timedevents import start_timed_event_manager, register_event
+from lib.timedevents import start_timed_event_manager
+from lib.cli import interpret_command
 
 print("Reading configuration file..")
 if not read_config_from_file():
     print("Error parsing configuration file.")
     sys.exit(0)
 print("Config loaded!")
-
 if len(sys.argv)>1 and sys.argv[1].lower() == "-d":
     print("DEBUG MODE")
     config['DEBUG'] = True
 
 import re
-import lib.irc as irc
+from lib.irc import irc
 from lib.cmd import process_message
 from lib.database import initialize_database
-
 initialize_database()
 start_timed_event_manager()
 initialize_currency_system()
@@ -27,14 +27,8 @@ def _consoleLoop():
     while True:
         _input = ""
         while not _input:
-            _input = input()
-        #TODO: Interpret command heh
-
-def testTimedEvent():
-    _irc.queue_out_messages("If this is sent out every 10 seconds it works yay")
-
-def testOnceEvent():
-    _irc.queue_out_messages("If this is only sent once and not every 10 seconds it works yay yay")
+            _input = input(">")
+        interpret_command(_input)
 
 def handle_message(message):
     """Parse and split IRC message and send it to the command processor
@@ -49,13 +43,10 @@ def handle_message(message):
     result = process_message(userName, msg)
     if result:
         if type(result) is str:
-            _irc.queue_out_messages(result)
-        _irc.queue_out_messages(*result)
+            irc.queue_out_messages(result)
+        irc.queue_out_messages(*result)
 
-_irc = irc.Irc(handle_message)
-_irc.start_bot()
+irc.start_bot(handle_message)
 
-#register_event(testTimedEvent, 10)
-#register_event(testOnceEvent, 10, True)
-#consoleThread = threading.Thread(target=_consoleLoop)
-#consoleThread.start()
+consoleThread = threading.Thread(target=_consoleLoop)
+consoleThread.start()

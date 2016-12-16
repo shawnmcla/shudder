@@ -37,6 +37,8 @@ def _add_tokens(username, amount):
         _users[username] = amount
     else:
         _users[username] += amount
+    if _users[username] < 0:
+        _users[username] = 0
     return True
 
 def _remove_tokens(username, amount):
