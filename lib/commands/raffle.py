@@ -12,20 +12,21 @@ class Raffle():
         self._active = False
         self._prize = ""
         self._entered = []
+        self.fee = 0
         self._startTime = None
         self._winner = None
 
     def start_raffle(self, userName, *args, **kwargs):
         """Start a raffle if one is not active."""
         if self._active:
-            return ["There is already a raffle in progress. !cancelraffle or !pickwinner first!"]
+            return ["There is already a raffle in progress. !raffle cancel or !raffle draw first!"]
         else:
             self._active = True
             self._prize = ' '.join(args)
             self._entered = []
             self._startTime = time.time()
             self._winner = None
-            return ["A raffle for {} has been initiated! Join it by using !raffle :D".format(self._prize)]
+            return ["A raffle for {} has been initiated! Join it by using !raffle enter :D".format(self._prize)]
 
     def enter_user(self, userName, *args, **kwargs):
         """Enter a user into the entrants list if a raffle is active."""
@@ -44,7 +45,7 @@ class Raffle():
             self._active = False
             return ["Raffle cancelled"]
         else:
-            return ["No active raffle! Start one with !makeraffle"]
+            return ["No active raffle! Start one with !raffle create"]
 
     def choose_winner(self, userName, *args, **kwargs):
         """Chose a winner from the list of entrants."""

@@ -1,10 +1,12 @@
+"""Various methods to facilitate time-triggered events."""
+
 import time
 import threading
 _events = {}
 
 class _TimedEvent:
     _nextId = 0
-    def __init__(self, call, interval, once = False):
+    def __init__(self, call, interval, once=False):
         _TimedEvent._nextId += 1
         self.eventId = _TimedEvent._nextId
         self.call = call
@@ -50,7 +52,7 @@ def _timerLoop():
             del _events[key]
         time.sleep(1)
 
-def start_timed_event_manager():
+def initialize_timed_event_manager():
     """Initialize the Thread for timed event handling."""
     timedEventThread = threading.Thread(target = _timerLoop)
     timedEventThread.start()

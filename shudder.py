@@ -2,7 +2,7 @@ import sys
 import threading
 from lib.cfg import read_config_from_file, config
 from lib.currency import initialize_currency_system
-from lib.timedevents import start_timed_event_manager
+from lib.timedevents import initialize_timed_event_manager
 from lib.cli import interpret_command
 
 print("Reading configuration file..")
@@ -19,7 +19,7 @@ from lib.irc import irc
 from lib.cmd import process_message
 from lib.database import initialize_database
 initialize_database()
-start_timed_event_manager()
+initialize_timed_event_manager()
 initialize_currency_system()
 
 def _consoleLoop():

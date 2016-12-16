@@ -1,13 +1,12 @@
-"""Module which stores defines bot chat commands."""
+"""Module which stores and defines bot chat commands."""
 
 import lib.database as db
-from lib.cfg import config
 from lib.commands.flipcoin import flip_coin
-from lib.commands.raffle import Raffle
+from lib.commands.raffle import raffle
 from lib.commands.bot import bot_info
 from lib.currency import get_balance, pay, give_tokens
 
-raffle = Raffle()
+_FLAGALIAS = "-a="
 
 """List of commands.
 
@@ -25,34 +24,84 @@ Dynamic commands are commands created dynamically by users and do not call any c
 
 commands = {}
 
-def command_subcommands(userName, *args, **kwargs):
-    """Handle calling subcommands for the "!command" command. """
-    subs = commands['!command']['subcommands']
-    if args:
-        sub = args[0]
-    else:
+
+def has_correct_args(command, argc):
+    """Verify if the number of arguments is valid.
+
+    command is an entry of the commands dictionary.
+    """
+    if argc == command['argc'] or command['argc'] == 0 or command['argc'] == -1 and argc > 0:
+        return True
+    return False
+
+def _subcommand(userName, subs, *args, **kwargs):
+    """Handle a subcommand call."""
+    subName = args[0]
+    if not subName in subs.keys():
         return False
-    if sub in subs.keys():
-        return subs[sub]['caller'](userName, *(args[1:]), **kwargs)
+    sub = subs[subName]
+    if not has_correct_args(sub, len(args[1:])):
+        return [subs[subName]['usage']]
+    return subs[subName]['caller'](userName, *(args[1:]), **kwargs)
+
+def _command_subcommands(userName, *args, **kwargs):
+    """Pass subcommands for the "!command" command."""
+    subs = commands['!command']['subcommands']
+    return _subcommand(userName, subs, *args, **kwargs)
+def _raffle_subcommands(userName, *args, **kwargs):
+    """Pass subcommands for the "!raffle" command."""
+    subs = commands['!raffle']['subcommands']
+    return _subcommand(userName, subs, *args, **kwargs)
+
+def _is_dynamic(command):
+    return 'dynamic' in command.keys() and command['dynamic']
+def _is_alias(command):
+    return 'isAlias' in command.keys() and command['isAlias']
 
 def dynamic_caller(userName, *args, **kwargs):
     """Handle a dynamic command.
     
     Called whenever a dynamic command is used
     """
-    if kwargs["commandName"]:
-        return [commands[kwargs["commandName"]]['output']]
+    if kwargs['commandName']:
+        command = commands[kwargs['commandName']]
+        if command['isAlias']:
+            while _is_alias(command):
+                if command['alias'] in commands.keys():
+                    alias = commands[command['alias']]
+                    if _is_alias(alias):
+                        command = alias
+                        continue
+                    if _is_dynamic(alias):
+                        return [alias['output']]
+                return ["Error: Alias commands may only refer to a dynamic command."]
+        return [command['output']]
     return None
 
 def _add_dynamic_command(commandName, output):
-    """Add a dynamic command to the command dictionary."""
+    """Parse and add a dynamic command to the command dictionary."""
+    splits = output.split()
+    isAlias = False
+    alias = None
+    lookingForFlags = True
+
     if commandName in commands:
         return False
+
+    for split in splits:
+        if split[0] != "-":
+            break
+        if split.startswith(_FLAGALIAS):
+            if len(split.split('=')) == 2:
+                isAlias = True
+                alias = split.split('=')[1]
     commands[commandName] = {
         'argc': 0,
         'level': 0,
         'desc': 'Dynamic command',
         'dynamic': True,
+        'isAlias': isAlias,
+        'alias': alias,
         'caller': dynamic_caller,
         'output': output
     }
@@ -104,7 +153,8 @@ def update_dynamic_command(userName, *args, **kwargs):
         return ["Please specify the new command output. Use !updatecommand to see usage information."]
     output = ' '.join(args[1:])
     if db.update_dynamic_command(commandName, output):
-        commands[commandName]['output'] = output
+        del commands[commandName]
+        _add_dynamic_command(commandName, output)
         return ["Updated command: {}".format(commandName)]
     else:
         return ["An error occured while trying to update the command in the database."]
@@ -129,38 +179,47 @@ commands = { #Internal pre-loaded commands
         'caller' : flip_coin
     },
     '!raffle' : {
-        'argc' : 0,
+        'argc': -1,
         'level' : 0,
-        'desc' : 'Join the raffle, if there is one active.',
-        'caller' : raffle.enter_user
-    },
-    '!makeraffle' : {
-        'argc' : -1,
-        'level' : 1,
-        'desc' : 'Start a raffle for the viewers.',
-        'usage' : '!makeraffle <raffle prize>',
-        'caller' : raffle.start_raffle
-    },
-    '!pickwinner' : {
-        'argc' : 0,
-        'level' : 1,
-        'desc' : 'End the raffle, if one is active and randomly choose a winner',
-        'caller' : raffle.choose_winner
-    },
-    '!cancelraffle' : {
-        'argc' : 0,
-        'level' : 1,
-        'desc' : 'Cancel the raffle, if one is active.',
-        'caller' : raffle.cancel_raffle
+        'desc' : 'Super-command to various raffle related subcommands.',
+        'usage': '!raffle <enter|create|draw|cancel> [arguments]',
+        'caller': _raffle_subcommands,
+        'subcommands': {
+            'enter' : {
+            'argc' : 0,
+            'level' : 0,
+            'desc' : 'Join the raffle, if there is one active.',
+            'caller' : raffle.enter_user
+            },
+            'create': {
+            'argc' : -1,
+            'level' : 1,
+            'desc' : 'Start a raffle for the viewers.',
+            'usage' : '!raffle create <raffle prize>',
+            'caller' : raffle.start_raffle
+            },
+            'draw': {
+            'argc' : 0,
+            'level' : 1,
+            'desc' : 'End the raffle, if one is active and randomly choose a winner',
+            'caller' : raffle.choose_winner
+            },
+            'cancel': {
+            'argc' : 0,
+            'level' : 1,
+            'desc' : 'Cancel the raffle, if one is active.',
+            'caller' : raffle.cancel_raffle
+            }
+        }
     },
     '!command' :{
         'argc' : -1,
         'level' : 1,
         'desc' : 'Super-command to various command related subcommands. A mouthful.',
-        'usage' : '!command <subcommand> [arguments]',
-        'caller' : command_subcommands,
+        'usage' : '!command <add|delete|update> [arguments]',
+        'caller' : _command_subcommands,
         'subcommands': {
-            'add' :{
+            'add' : {
             'argc' : -1,
             'level' : 1,
             'desc' : 'Add a new dynamic command.',
@@ -174,7 +233,7 @@ commands = { #Internal pre-loaded commands
             'usage' : '!command delete <command name>',
             'caller' : delete_dynamic_command
             },
-            'update':{
+            'update': {
             'argc' : -1,
             'level' : 1,
             'desc' : 'Modify an existing dynamic command\'s output.',
