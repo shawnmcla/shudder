@@ -195,7 +195,7 @@ commands = { #Internal pre-loaded commands
             'argc' : -1,
             'level' : 1,
             'desc' : 'Start a raffle for the viewers.',
-            'usage' : '!raffle create <raffle prize>',
+            'usage' : '!raffle create <fee> <raffle prize>',
             'caller' : raffle.start_raffle
             },
             'draw': {

@@ -1,9 +1,14 @@
+from lib.cfg import currencyConfig
 import lib.twitch as twitch
 import random
 import time
 
-#Command !raffle, !cancelraffle, !makeraffle, !pickwinner
+_CURRENCYNAME = currencyConfig['currencyName']
 
+"""
+TODO
+ACTUALLY MAKE USERS PAY
+"""
 class Raffle():
     """Class representing and handling a raffle."""
 
@@ -22,11 +27,15 @@ class Raffle():
             return ["There is already a raffle in progress. !raffle cancel or !raffle draw first!"]
         else:
             self._active = True
-            self._prize = ' '.join(args)
+            try:
+                self.fee = int(args[0])
+            except ValueError:
+                return ["Invalid fee specified. Use !raffle create for usage info."]
+            self._prize = ' '.join(args[1:])
             self._entered = []
             self._startTime = time.time()
             self._winner = None
-            return ["A raffle for {} has been initiated! Join it by using !raffle enter :D".format(self._prize)]
+            return ["A raffle for {} has been initiated! Join it by using !raffle enter. Entry fee: {} {}".format(self._prize, self.fee, _CURRENCYNAME)]
 
     def enter_user(self, userName, *args, **kwargs):
         """Enter a user into the entrants list if a raffle is active."""
